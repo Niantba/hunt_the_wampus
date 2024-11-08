@@ -22,7 +22,6 @@ describe 'Hunt The Wampus' do
     _(subject.status).must_equal :playing
   end
 
-  focus
   it 'enables agent to move up and feel the stench of the wampus' do
     subject.move_up
 
@@ -195,7 +194,7 @@ describe 'Hunt The Wampus' do
     ]
     _(subject.board).must_equal new_board
   end
-
+  focus
   it 'enables agent to move up twice, hitting the wampus and dying' do
     subject.move_up
     subject.move_up

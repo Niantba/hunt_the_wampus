@@ -2,8 +2,9 @@ require_relative 'agent'
 
 class HuntTheWampus
   module Model
-    attr_reader :score, :status
-    class Game
+      class Game
+      attr_reader :score, :status
+      attr_writer :board
       # TODO implement
 
       def initialize
@@ -17,7 +18,6 @@ class HuntTheWampus
         ]
         @status = :playing
         @gold_found = false
-        @agent_location = [3, 0]
         @wampus_is_alive = true
       end
 
@@ -51,55 +51,84 @@ class HuntTheWampus
       end
 
       def agent_location
-        @agent_location
+        @agent.location
+      end
+
+      def agent_location=(location)
+        @agent.location = location
+      end
+
+      def agent_alive=(alive)
+        @agent.alive = alive
       end
 
       def board
         @board
       end
 
-      def gold_found
-        @gold_found = true
-        @score += 1000
-      end
-
-      def grab_gold
-        @score -= 1
-      end
-
       def game_state?
         @game_state
       end
 
+      def move_agent(horizontal, vertical)
+        @score -= 1
+        new_location = [@agent.location[0] + horizontal, @agent.location[1] + vertical]
+
+        # checks board limits
+        if new_location[0] < 0 || new_location[0] >= @board.length || new_location[1] < 0 || new_location[1] >= @board[0].length
+          return
+        end
+
+        #updates agent location and board
+        @agent.location = new_location
+
+        @board.map {|l| l.map {|c| c.delete(:agent)}}
+        @board[@agent.location[0]][@agent.location[1]].unshift(:agent)
+
+        #finds the wampus
+        if @board[@agent.location[0]][@agent.location[1]].include?(:wampus)
+          @agent.alive = false
+          @status = :lost
+          return
+        end
+      end
+
       def move_up
         move_agent(-1, 0)
-        @agent_location[0] -= 1
       end
 
       def move_down
         move_agent(1, 0)
-        @agent_location[0] += 1
       end
 
       def move_left
         move_agent(0, -1)
-        @agent_location[1] -= 1
       end
 
       def move_right
         move_agent(0, 1)
-        @agent_location[1] += 1
       end
 
-      def move_agent(direction)
-        @score = -1
-      end
 
-      def agent_cell
-        @board[@agent_location[0]][@agent_location[1]]
-      end
 
-      def shoot_arrow(direction)
+        # #falls into a pit
+        # if @board[new_location[0]][new_location[1]].include?(:pit)
+        #   @agent.alive = false
+        #   @status = :lost
+        #   return
+        # end
+
+        # #finds the gold
+        # if @board[new_location[0]][new_location[1]].include?(:gold)
+        #   @gold_found = true
+        #   @score += 999
+        # end
+        # #finds the exit
+        # if @board[new_location[0]][new_location[1]].include?(:exit)
+        #   @status = :won
+        # end
+
+      def shoot_arrow(horizontal, vertical)
         @agent.has_arrow = false
       end
     end

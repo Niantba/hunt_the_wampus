@@ -1,12 +1,14 @@
 class HuntTheWampus
   module Model
-    attr_reader :has_arrow, :is_alive
     class Agent
       # TODO implement
+      attr_reader :has_arrow
+      attr_accessor :location, :alive
 
       def initialize
         @has_arrow = true
         @alive = true
+        @location = [3, 0]
       end
 
       def has_arrow?
@@ -14,9 +16,8 @@ class HuntTheWampus
       end
 
       def alive?
-        @has_arrow
+        @alive
       end
-
     end
   end
 end
