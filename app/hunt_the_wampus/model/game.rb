@@ -58,10 +58,6 @@ class HuntTheWampus
         @agent.location = location
       end
 
-      def agent_alive=(alive)
-        @agent.alive = alive
-      end
-
       def board
         @board
       end
@@ -70,7 +66,15 @@ class HuntTheWampus
         @game_state
       end
 
+      def grab_gold
+        @score -= 1
+        @board.map {|l| l.map {|c| c.delete(:gold)}}
+        @score += 1000
+        @gold_found = false
+      end
+
       def move_agent(horizontal, vertical)
+        return if @status == :lost
         @score -= 1
         new_location = [@agent.location[0] + horizontal, @agent.location[1] + vertical]
 
@@ -87,9 +91,21 @@ class HuntTheWampus
 
         #finds the wampus
         if @board[@agent.location[0]][@agent.location[1]].include?(:wampus)
-          @agent.alive = false
+          @agent.die!
           @status = :lost
           return
+        end
+
+        #falls into a pit
+        if @board[@agent.location[0]][@agent.location[1]].include?(:pit)
+          @agent.die!
+          @status = :lost
+          return
+        end
+
+        #finds the gold
+        if @board[new_location[0]][new_location[1]].include?(:gold)
+          @gold_found = true
         end
       end
 
@@ -109,20 +125,6 @@ class HuntTheWampus
         move_agent(0, 1)
       end
 
-
-
-        # #falls into a pit
-        # if @board[new_location[0]][new_location[1]].include?(:pit)
-        #   @agent.alive = false
-        #   @status = :lost
-        #   return
-        # end
-
-        # #finds the gold
-        # if @board[new_location[0]][new_location[1]].include?(:gold)
-        #   @gold_found = true
-        #   @score += 999
-        # end
         # #finds the exit
         # if @board[new_location[0]][new_location[1]].include?(:exit)
         #   @status = :won

@@ -18,6 +18,10 @@ class HuntTheWampus
       def alive?
         @alive
       end
+
+      def die!
+        @alive = false
+      end
     end
   end
 end
