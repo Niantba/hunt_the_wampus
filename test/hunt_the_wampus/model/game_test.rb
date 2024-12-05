@@ -290,7 +290,6 @@ describe 'Hunt The Wampus' do
     _(subject.board).must_equal new_board
   end
 
-  focus
   it 'enables agent to shoot arrow up and kill the wampus' do
     wampus_killed_location = subject.shoot_arrow_up
 
@@ -314,7 +313,7 @@ describe 'Hunt The Wampus' do
     ]
     _(subject.board).must_equal new_board
   end
-
+focus
   it 'prevents agent from shooting arrow up to kill the wampus after shooting arrow right and wasting it' do
     wampus_killed_location = subject.shoot_arrow_right
     _(wampus_killed_location).must_be_nil

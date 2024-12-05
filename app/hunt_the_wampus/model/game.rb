@@ -2,7 +2,7 @@ require_relative 'agent'
 
 class HuntTheWampus
   module Model
-      class Game
+    class Game
       attr_reader :score, :status
       attr_writer :board
       # TODO implement
@@ -19,6 +19,7 @@ class HuntTheWampus
         @status = :playing
         @gold_found = false
         @wampus_is_alive = true
+        @wampus_location = [1,0]
       end
 
       def status
@@ -37,13 +38,14 @@ class HuntTheWampus
         @agent.has_arrow?
       end
 
-      def wampus_is_alive?
-        @wampus_is_alive
-      end
-
       def wampus_dead
-        !@wampus.is_alive
+        @wampus_is_alive = false
         @score += 100
+        @board.map {|l| l.map do |c|
+          c.delete(:wampus)
+          c.delete(:stench)
+        end
+        }
       end
 
       def score
@@ -56,6 +58,10 @@ class HuntTheWampus
 
       def agent_location=(location)
         @agent.location = location
+      end
+
+      def agent_has_arrow=(has_arrow)
+        @agent.has_arrow = has_arrow
       end
 
       def board
@@ -130,9 +136,28 @@ class HuntTheWampus
         #   @status = :won
         # end
 
-      def shoot_arrow(horizontal, vertical)
+      def shoot_arrow
+        return if @status == :lost || !@agent.has_arrow?
+        @score -= 1
         @agent.has_arrow = false
       end
+
+      def shoot_arrow_up
+        shoot_arrow
+        if agent_location[1] == @wampus_location[1] && agent_location[0] > @wampus_location[0]
+          wampus_dead
+          @wampus_location
+        end
+      end
+
+      def shoot_arrow_right
+        shoot_arrow
+        if agent_location[0] == @wampus_location[0] && agent_location[1] < @wampus_location[1]
+          wampus_dead
+          @wampus_location
+        end
+      end
+
     end
   end
 end

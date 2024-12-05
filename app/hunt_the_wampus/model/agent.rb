@@ -2,8 +2,7 @@ class HuntTheWampus
   module Model
     class Agent
       # TODO implement
-      attr_reader :has_arrow
-      attr_accessor :location, :alive
+      attr_accessor :location, :alive, :has_arrow
 
       def initialize
         @has_arrow = true
