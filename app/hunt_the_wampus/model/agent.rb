@@ -1,10 +1,15 @@
 class HuntTheWampus
   module Model
     class Agent
-      # TODO implement
+      attr_reader :game
       attr_accessor :location, :alive, :has_arrow
 
-      def initialize
+      def initialize(game)
+        @game = game
+        restart
+      end
+
+      def restart
         @has_arrow = true
         @alive = true
         @location = [3, 0]
@@ -18,8 +23,25 @@ class HuntTheWampus
         @alive
       end
 
-      def die!
-        @alive = false
+      def dead?
+        !alive?
+      end
+
+      def sense_stench?
+        game.agent_cell.include?(:stench)
+      end
+
+      def sense_breeze?
+        game.agent_cell.include?(:breeze)
+      end
+
+      def sense_gold?
+        game.agent_cell.include?(:gold)
+      end
+
+      def cell
+        agent_row, agent_column = location
+        game.board[agent_row][agent_column]
       end
     end
   end
